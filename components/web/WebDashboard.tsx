@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, useWindowDimensions } from 'react-native';
+import { useResponsive } from '@/hooks/use-breakpoint';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/auth-context';
@@ -223,6 +224,7 @@ export function WebDashboard() {
   const { user } = useAuth();
   const { obras, inspections } = useData();
   const router = useRouter();
+  const { isMobile, isTablet, isDesktop, cols } = useResponsive();
 
   const activeObras = obras.filter(o => o.status === 'active');
 
@@ -260,7 +262,7 @@ export function WebDashboard() {
       </View>
 
       {/* KPI Cards */}
-      <View style={styles.kpiRow}>
+      <View style={[styles.kpiRow, isMobile && styles.kpiRowMobile]}>
         <View style={styles.kpiCard}>
           <MaterialIcons name="business" size={24} color="#2E7D32" />
           <Text style={styles.kpiValue}>{activeObras.length}</Text>
@@ -284,7 +286,7 @@ export function WebDashboard() {
       </View>
 
       {/* Main grid */}
-      <View style={styles.grid}>
+      <View style={[styles.grid, isMobile && styles.gridMobile]}>
         {/* Obras cards */}
         <View style={styles.obrasSection}>
           <View style={styles.sectionHeader}>
@@ -306,7 +308,12 @@ export function WebDashboard() {
               </TouchableOpacity>
             </View>
           ) : (
-            <View style={styles.obrasGrid}>
+            <View style={[
+              styles.obrasGrid,
+              isDesktop && styles.obrasGridDesktop,
+              isTablet && styles.obrasGridTablet,
+              isMobile && styles.obrasGridMobile,
+            ]}>
               {activeObras.map(obra => <ObraCard key={obra.id} obra={obra} />)}
             </View>
           )}
@@ -388,10 +395,12 @@ const styles = StyleSheet.create({
   newInspBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#2E7D32', borderRadius: 10, paddingHorizontal: 16, paddingVertical: 10 },
   newInspBtnText: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
   kpiRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
+  kpiRowMobile: { gap: 8 },
   kpiCard: { flex: 1, minWidth: 140, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E0E0E0', gap: 6 },
   kpiValue: { fontSize: 28, fontWeight: '900', color: '#1C1C1C' },
   kpiLabel: { fontSize: 12, color: '#9E9E9E', fontWeight: '500' },
   grid: { flexDirection: 'row', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' },
+  gridMobile: { flexDirection: 'column' },
   obrasSection: { flex: 2, minWidth: 320, gap: 12 },
   rightCol: { flex: 1, minWidth: 280, gap: 12 },
   card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E0E0E0', gap: 8 },
@@ -399,6 +408,9 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 15, fontWeight: '700', color: '#1C1C1C' },
   sectionLink: { fontSize: 13, color: '#2E7D32', fontWeight: '600' },
   obrasGrid: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
+  obrasGridDesktop: { flexDirection: 'row', flexWrap: 'wrap' },
+  obrasGridTablet: { flexDirection: 'row', flexWrap: 'wrap' },
+  obrasGridMobile: { flexDirection: 'column' },
   emptyState: { alignItems: 'center', padding: 32, gap: 12, backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#E0E0E0' },
   emptyText: { fontSize: 14, color: '#9E9E9E' },
   emptyBtn: { backgroundColor: '#2E7D32', borderRadius: 8, paddingHorizontal: 16, paddingVertical: 8 },

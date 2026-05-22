@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, ScrollView,
-  TextInput, Modal, Platform,
+  TextInput, Modal, Platform, useWindowDimensions,
 } from 'react-native';
+import { useResponsive } from '@/hooks/use-breakpoint';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useData } from '@/lib/data-context';
 import { useAuth } from '@/lib/auth-context';
@@ -159,7 +160,7 @@ function CellDrawer({ cell, local, etapa, onClose, onSave }: DrawerProps) {
 const drawerStyles = StyleSheet.create({
   overlay: { position: 'absolute' as any, inset: 0, zIndex: 1000, flexDirection: 'row' },
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' },
-  drawer: { width: 420, backgroundColor: '#FFFFFF', borderLeftWidth: 1, borderLeftColor: '#E0E0E0', flexDirection: 'column' },
+  drawer: { width: 420, maxWidth: '100%' as any, backgroundColor: '#FFFFFF', borderLeftWidth: 1, borderLeftColor: '#E0E0E0', flexDirection: 'column' },
   header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: '#E0E0E0' },
   title: { fontSize: 16, fontWeight: '700', color: '#1C1C1C' },
   subtitle: { fontSize: 13, color: '#9E9E9E', marginTop: 2 },
@@ -228,7 +229,7 @@ function BulkActionModal({ count, onClose, onApply }: {
 
 const bulkStyles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center' },
-  modal: { backgroundColor: '#FFFFFF', borderRadius: 14, padding: 24, width: 400, gap: 12 },
+  modal: { backgroundColor: '#FFFFFF', borderRadius: 14, padding: 24, width: '90%' as any, maxWidth: 400, gap: 12 },
   title: { fontSize: 16, fontWeight: '700', color: '#1C1C1C' },
   sub: { fontSize: 13, color: '#9E9E9E' },
   list: { gap: 6 },
@@ -373,10 +374,13 @@ export function WebInspection() {
     });
   };
 
+  const { isMobile, isTablet, isDesktop } = useResponsive();
+  const { width: screenWidth } = useWindowDimensions();
+
   return (
     <View style={styles.root}>
       {/* Top toolbar */}
-      <View style={styles.toolbar}>
+      <View style={[styles.toolbar, isMobile && styles.toolbarMobile]}>
         <View style={styles.selectors}>
           {/* Obra */}
           <View style={styles.selectorGroup}>
@@ -692,6 +696,7 @@ const massStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   root: { flex: 1, flexDirection: 'column', backgroundColor: '#F5F5F5', position: 'relative' as any },
   toolbar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', padding: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E0E0E0', flexWrap: 'wrap', gap: 12 },
+  toolbarMobile: { flexDirection: 'column', alignItems: 'stretch' },
   selectors: { flexDirection: 'row', gap: 12, flexWrap: 'wrap', flex: 1 },
   selectorGroup: { minWidth: 160, flex: 1 },
   selectorLabel: { fontSize: 11, fontWeight: '700', color: '#9E9E9E', textTransform: 'uppercase', marginBottom: 4 },

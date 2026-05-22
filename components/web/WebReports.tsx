@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { useResponsive } from '@/hooks/use-breakpoint';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useData } from '@/lib/data-context';
 import { STATUS_CONFIG } from '@/lib/types';
@@ -167,6 +168,8 @@ export function WebReports() {
     if (typeof window !== 'undefined') window.print();
   };
 
+  const { isMobile, isTablet, isDesktop } = useResponsive();
+
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
       {/* Toolbar */}
@@ -211,7 +214,7 @@ export function WebReports() {
       </View>
 
       {/* Charts row */}
-      <View style={styles.chartsRow}>
+      <View style={[styles.chartsRow, isMobile && styles.chartsRowMobile]}>
         {/* Gauge */}
         <View style={styles.chartCard}>
           <Text style={styles.chartTitle}>Índice de Conformidade</Text>
@@ -347,6 +350,7 @@ const styles = StyleSheet.create({
   kpiValue: { fontSize: 28, fontWeight: '900', color: '#1C1C1C' },
   kpiLabel: { fontSize: 12, color: '#9E9E9E', fontWeight: '500' },
   chartsRow: { flexDirection: 'row', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' },
+  chartsRowMobile: { flexDirection: 'column' },
   chartCard: { flex: 1, minWidth: 220, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 20, borderWidth: 1, borderColor: '#E0E0E0', gap: 12 },
   chartTitle: { fontSize: 14, fontWeight: '700', color: '#1C1C1C' },
   gaugeWrap: { alignItems: 'center' },
