@@ -7,9 +7,10 @@ import {
   getServicos, addServico, updateServico, deleteServico,
   getResponsaveis, addResponsavel, updateResponsavel, deleteResponsavel,
   getInspections, upsertInspection,
+  getEdificacoes, addEdificacao, updateEdificacao, deleteEdificacao,
 } from './storage';
 import type {
-  Obra, Torre, Pavimento, Local, Servico, Responsavel, InspectionCell, EtapaServico
+  Obra, Torre, Pavimento, Local, Servico, Responsavel, InspectionCell, EtapaServico, Edificacao
 } from './types';
 
 interface DataContextType {
@@ -49,6 +50,11 @@ interface DataContextType {
   removeResponsavel: (id: string) => Promise<void>;
   // Inspections
   saveInspection: (cell: InspectionCell) => Promise<void>;
+  // Edificações
+  edificacoes: Edificacao[];
+  createEdificacao: (e: Omit<Edificacao, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Edificacao>;
+  editEdificacao: (e: Edificacao) => Promise<void>;
+  removeEdificacao: (id: string) => Promise<void>;
   // Utility
   clearAllData: () => Promise<void>;
 }
@@ -67,13 +73,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [responsaveis, setResponsaveis] = useState<Responsavel[]>([]);
   const [inspections, setInspections] = useState<InspectionCell[]>([]);
+  const [edificacoes, setEdificacoes] = useState<Edificacao[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const reload = useCallback(async () => {
     setIsLoading(true);
-    const [o, t, p, l, s, r, i] = await Promise.all([
+    const [o, t, p, l, s, r, i, ed] = await Promise.all([
       getObras(), getTorres(), getPavimentos(), getLocais(),
-      getServicos(), getResponsaveis(), getInspections(),
+      getServicos(), getResponsaveis(), getInspections(), getEdificacoes(),
     ]);
     setObras(o);
     setTorres(t);
@@ -82,6 +89,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setServicos(s);
     setResponsaveis(r);
     setInspections(i);
+    setEdificacoes(ed);
     setIsLoading(false);
   }, []);
 
@@ -194,12 +202,30 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setResponsaveis(prev => prev.filter(r => r.id !== id));
   };
 
+  // Edificações
+  const createEdificacao = async (data: Omit<Edificacao, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const now = new Date().toISOString();
+    const ed: Edificacao = { ...data, id: uuid(), createdAt: now, updatedAt: now };
+    await addEdificacao(ed);
+    setEdificacoes(prev => [...prev, ed]);
+    return ed;
+  };
+  const editEdificacao = async (ed: Edificacao) => {
+    const updated = { ...ed, updatedAt: new Date().toISOString() };
+    await updateEdificacao(updated);
+    setEdificacoes(prev => prev.map(e => e.id === ed.id ? updated : e));
+  };
+  const removeEdificacao = async (id: string) => {
+    await deleteEdificacao(id);
+    setEdificacoes(prev => prev.filter(e => e.id !== id));
+  };
+
   // Utility
   const clearAllData = async () => {
     const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
     await AsyncStorage.clear();
     setObras([]); setTorres([]); setPavimentos([]); setLocais([]);
-    setServicos([]); setResponsaveis([]); setInspections([]);
+    setServicos([]); setResponsaveis([]); setInspections([]); setEdificacoes([]);
   };
 
   // Inspections
@@ -226,6 +252,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       createLocal, createLocaisMassa, editLocal, removeLocal,
       createServico, editServico, removeServico,
       createResponsavel, editResponsavel, removeResponsavel,
+      edificacoes, createEdificacao, editEdificacao, removeEdificacao,
       saveInspection,
       clearAllData,
     }}>

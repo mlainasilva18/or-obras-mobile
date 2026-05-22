@@ -262,13 +262,17 @@ function CellTooltipModal({
 export default function InspectionScreen() {
   if (Platform.OS === 'web') return <WebInspection />;
 
-  const { obras, torres, pavimentos, locais, servicos, inspections, saveInspection } = useData();
+  const { obras, torres, pavimentos, locais, servicos, inspections, saveInspection, edificacoes } = useData();
   const { user } = useAuth();
 
   const [selectedObraId, setSelectedObraId] = useState<string | null>(null);
   const [selectedTorreId, setSelectedTorreId] = useState<string | null>(null);
   const [selectedPavId, setSelectedPavId] = useState<string | null>(null);
   const [selectedServId, setSelectedServId] = useState<string | null>(null);
+  // Edificação → Local → Elemento (opcionais, para contexto adicional)
+  const [selectedEdifId, setSelectedEdifId] = useState<string | null>(null);
+  const [selectedLocalEdifId, setSelectedLocalEdifId] = useState<string | null>(null);
+  const [selectedElementoId, setSelectedElementoId] = useState<string | null>(null);
 
   const [activeCell, setActiveCell] = useState<{ etapaId: string; localId: string } | null>(null);
   const [tooltipCell, setTooltipCell] = useState<{ etapaId: string; localId: string } | null>(null);
@@ -279,6 +283,13 @@ export default function InspectionScreen() {
 
   // Derived data
   const obraTorres = useMemo(() => torres.filter(t => t.obraId === selectedObraId), [torres, selectedObraId]);
+  const selectedEdif = useMemo(() => edificacoes.find(e => e.id === selectedEdifId), [edificacoes, selectedEdifId]);
+  const edifLocais = useMemo(() => selectedEdif?.locais ?? [], [selectedEdif]);
+  const edifElementos = useMemo(() => {
+    if (!selectedEdif) return [];
+    if (!selectedLocalEdifId) return selectedEdif.elementos;
+    return selectedEdif.elementos; // elementos não são filtrados por local — todos pertencem à edificação
+  }, [selectedEdif, selectedLocalEdifId]);
   const torrePavs = useMemo(() => pavimentos.filter(p => p.torreId === selectedTorreId), [pavimentos, selectedTorreId]);
   const pavLocais = useMemo(() => locais.filter(l => l.pavimentoId === selectedPavId).sort((a, b) => a.order - b.order), [locais, selectedPavId]);
   const selectedServico = useMemo(() => servicos.find(s => s.id === selectedServId), [servicos, selectedServId]);
@@ -447,6 +458,84 @@ export default function InspectionScreen() {
                 activeOpacity={0.7}
               >
                 <Text style={[styles.subChipText, selectedServId === s.id && styles.subChipTextActive]}>{s.code} — {s.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Edificação (opcional) */}
+      {edificacoes.length > 0 && (
+        <View style={styles.subSelectors}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.subRow}>
+            <Text style={styles.subLabel}>Edificação:</Text>
+            <TouchableOpacity
+              style={[styles.subChip, selectedEdifId === null && styles.subChipActive]}
+              onPress={() => { setSelectedEdifId(null); setSelectedLocalEdifId(null); setSelectedElementoId(null); }}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.subChipText, selectedEdifId === null && styles.subChipTextActive]}>Todas</Text>
+            </TouchableOpacity>
+            {edificacoes.map(e => (
+              <TouchableOpacity
+                key={e.id}
+                style={[styles.subChip, selectedEdifId === e.id && styles.subChipActive]}
+                onPress={() => { setSelectedEdifId(e.id); setSelectedLocalEdifId(null); setSelectedElementoId(null); }}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.subChipText, selectedEdifId === e.id && styles.subChipTextActive]}>{e.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Local da Edificação */}
+      {selectedEdifId && edifLocais.length > 0 && (
+        <View style={styles.subSelectors}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.subRow}>
+            <Text style={styles.subLabel}>Local:</Text>
+            <TouchableOpacity
+              style={[styles.subChip, selectedLocalEdifId === null && styles.subChipActive]}
+              onPress={() => { setSelectedLocalEdifId(null); setSelectedElementoId(null); }}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.subChipText, selectedLocalEdifId === null && styles.subChipTextActive]}>Todos</Text>
+            </TouchableOpacity>
+            {edifLocais.map(l => (
+              <TouchableOpacity
+                key={l.id}
+                style={[styles.subChip, selectedLocalEdifId === l.id && styles.subChipActive]}
+                onPress={() => { setSelectedLocalEdifId(l.id); setSelectedElementoId(null); }}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.subChipText, selectedLocalEdifId === l.id && styles.subChipTextActive]}>{l.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Elemento da Edificação */}
+      {selectedEdifId && edifElementos.length > 0 && (
+        <View style={styles.subSelectors}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.subRow}>
+            <Text style={styles.subLabel}>Elemento:</Text>
+            <TouchableOpacity
+              style={[styles.subChip, selectedElementoId === null && styles.subChipActive]}
+              onPress={() => setSelectedElementoId(null)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.subChipText, selectedElementoId === null && styles.subChipTextActive]}>Todos</Text>
+            </TouchableOpacity>
+            {edifElementos.map(el => (
+              <TouchableOpacity
+                key={el.id}
+                style={[styles.subChip, selectedElementoId === el.id && styles.subChipActive]}
+                onPress={() => setSelectedElementoId(el.id)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.subChipText, selectedElementoId === el.id && styles.subChipTextActive]}>{el.name}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>

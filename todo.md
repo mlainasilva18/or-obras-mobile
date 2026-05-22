@@ -93,3 +93,20 @@
 - [x] Registrar service worker via script inline no +html.tsx
 - [x] Meta tags Open Graph para compartilhamento (WhatsApp, redes sociais)
 - [x] theme-color #2E7D32 para barra de status no Chrome e Safari
+
+## Módulo Edificações
+- [x] Adicionar tipos Edificacao, LocalEdificacao, ElementoEdificacao em types.ts
+- [x] Adicionar funções CRUD de Edificações no storage.ts
+- [x] Adicionar estado e funções de Edificações no data-context.tsx
+- [x] Criar tela EdificacoesScreen (lista + formulário mobile)
+- [x] Formulário: campo Nome da Edificação
+- [x] Formulário: lista de Locais com add/remove
+- [x] Formulário: modo Adição em Grupo (prefixo + intervalo + prévia)
+- [x] Formulário: modo Adição Unitária (nome livre + add/remove)
+- [x] Formulário: lista unificada de elementos com scroll
+- [x] Toast "Edificação salva com sucesso"
+- [x] Botão Salvar fixo na parte inferior
+- [x] Adicionar aba Edificações entre Obras e Serviços no cadastros.tsx
+- [x] Controle de acesso: só owner/admin veem a aba de cadastro
+- [x] Integrar Edificação → Local → Elemento na tela de Inspeção FVS
+- [x] Atualizar WebCadastros.tsx com aba Edificações

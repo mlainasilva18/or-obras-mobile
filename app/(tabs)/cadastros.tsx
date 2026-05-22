@@ -6,10 +6,12 @@ import {
 import { WebCadastros } from '@/components/web/WebCadastros';
 import { ScreenContainer } from '@/components/screen-container';
 import { useData } from '@/lib/data-context';
+import { useAuth } from '@/lib/auth-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import { EdificacoesScreen } from '@/components/EdificacoesScreen';
 import type { Obra, Servico, EtapaServico, Responsavel } from '@/lib/types';
 
-type Tab = 'obras' | 'servicos' | 'responsaveis';
+type Tab = 'obras' | 'edificacoes' | 'servicos' | 'responsaveis';
 
 // ---- Obra Form Modal ----
 function ObraFormModal({
@@ -512,6 +514,8 @@ export default function CadastrosScreen() {
   if (Platform.OS === 'web') return <WebCadastros />;
 
   const { obras, servicos, responsaveis, createObra, editObra, removeObra, createServico, editServico, removeServico, createResponsavel, editResponsavel, removeResponsavel } = useData();
+  const { user } = useAuth();
+  const canManage = user?.role === 'owner' || user?.role === 'admin';
   const [activeTab, setActiveTab] = useState<Tab>('obras');
   const [obraModal, setObraModal] = useState(false);
   const [editingObra, setEditingObra] = useState<Obra | undefined>();
@@ -557,6 +561,7 @@ export default function CadastrosScreen() {
           style={styles.addBtn}
           onPress={() => {
             if (activeTab === 'obras') { setEditingObra(undefined); setObraModal(true); }
+            else if (activeTab === 'edificacoes') { /* gerenciado pelo EdificacoesScreen */ }
             else if (activeTab === 'servicos') { setEditingServico(undefined); setServicoModal(true); }
             else { setEditingResp(undefined); setRespModal(true); }
           }}
@@ -566,9 +571,9 @@ export default function CadastrosScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Tabs */}
+      {/* Tabs — Edificações só aparece para owner/admin */}
       <View style={styles.tabBar}>
-        {(['obras', 'servicos', 'responsaveis'] as Tab[]).map(tab => (
+        {(['obras', ...(canManage ? ['edificacoes'] : []), 'servicos', 'responsaveis'] as Tab[]).map(tab => (
           <TouchableOpacity
             key={tab}
             style={[styles.tab, activeTab === tab && styles.tabActive]}
@@ -576,13 +581,20 @@ export default function CadastrosScreen() {
             activeOpacity={0.7}
           >
             <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
-              {tab === 'obras' ? 'Obras' : tab === 'servicos' ? 'Serviços' : 'Responsáveis'}
+              {tab === 'obras' ? 'Obras' : tab === 'edificacoes' ? 'Edificações' : tab === 'servicos' ? 'Serviços' : 'Responsáveis'}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+      {/* Edificações — renderizado fora do ScrollView para ter FlatList própria */}
+      {activeTab === 'edificacoes' && canManage && (
+        <View style={{ flex: 1 }}>
+          <EdificacoesScreen />
+        </View>
+      )}
+
+      <ScrollView style={[styles.scroll, activeTab === 'edificacoes' && { display: 'none' }]} contentContainerStyle={styles.content}>
         {/* Obras Tab */}
         {activeTab === 'obras' && (
           obras.length === 0 ? (
@@ -645,6 +657,9 @@ export default function CadastrosScreen() {
             </View>
           ))
         )}
+
+        {/* Edificações placeholder — conteúdo real está acima do ScrollView */}
+        {activeTab === 'edificacoes' && null}
 
         {/* Responsáveis Tab */}
         {activeTab === 'responsaveis' && (

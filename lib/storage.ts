@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type {
-  User, Obra, Torre, Pavimento, Local, Servico, Responsavel, InspectionCell
+  User, Obra, Torre, Pavimento, Local, Servico, Responsavel, InspectionCell, Edificacao
 } from './types';
 
 const KEYS = {
+  EDIFICACOES: '@or_obras:edificacoes',
   USER: '@or_obras:user',
   OBRAS: '@or_obras:obras',
   TORRES: '@or_obras:torres',
@@ -149,6 +150,22 @@ export const upsertInspection = async (cell: InspectionCell) => {
     list.push(cell);
   }
   await saveInspections(list);
+};
+
+// ---- Edificações ----
+export const getEdificacoes = async (): Promise<Edificacao[]> => (await get<Edificacao[]>(KEYS.EDIFICACOES)) ?? [];
+export const saveEdificacoes = (list: Edificacao[]) => set(KEYS.EDIFICACOES, list);
+export const addEdificacao = async (e: Edificacao) => {
+  const list = await getEdificacoes();
+  await saveEdificacoes([...list, e]);
+};
+export const updateEdificacao = async (updated: Edificacao) => {
+  const list = await getEdificacoes();
+  await saveEdificacoes(list.map(e => e.id === updated.id ? updated : e));
+};
+export const deleteEdificacao = async (id: string) => {
+  const list = await getEdificacoes();
+  await saveEdificacoes(list.filter(e => e.id !== id));
 };
 
 // ---- Pending Sync ----

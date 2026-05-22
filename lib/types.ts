@@ -108,6 +108,29 @@ export interface InspectionCell {
   updatedAt: string;
 }
 
+// ---- Edificações ----
+
+export interface LocalEdificacao {
+  id: string;
+  name: string; // ex: Térreo, 1º Pavimento, Cobertura
+  order: number;
+}
+
+export interface ElementoEdificacao {
+  id: string;
+  name: string; // ex: V1, V2, Pilar Central
+  source: 'group' | 'unit'; // origem: gerado em grupo ou adicionado unitariamente
+}
+
+export interface Edificacao {
+  id: string;
+  name: string; // ex: Torre 1, Bloco A, Sede
+  locais: LocalEdificacao[];
+  elementos: ElementoEdificacao[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AppState {
   user: User | null;
   isAuthenticated: boolean;
@@ -120,6 +143,7 @@ export interface AppState {
   servicos: Servico[];
   responsaveis: Responsavel[];
   inspections: InspectionCell[];
+  edificacoes: Edificacao[];
 }
 
 // Status display config
