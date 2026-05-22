@@ -110,3 +110,21 @@
 - [x] Controle de acesso: só owner/admin veem a aba de cadastro
 - [x] Integrar Edificação → Local → Elemento na tela de Inspeção FVS
 - [x] Atualizar WebCadastros.tsx com aba Edificações
+
+## GitHub + Vercel
+- [ ] Criar .gitignore adequado para Expo/Node
+- [ ] Criar vercel.json com configuração de build e rotas
+- [ ] Criar README.md com instruções de deploy no Vercel
+- [ ] Criar repositório público no GitHub
+- [ ] Push do código para o GitHub
+
+## Design Responsivo
+- [ ] Criar hook useBreakpoint (mobile/tablet/desktop)
+- [ ] WebLayout: sidebar recolhível no tablet, expandida no desktop
+- [ ] WebDashboard: 1 coluna mobile, 2 tablet, 3-4 desktop
+- [ ] WebCadastros: 1 coluna mobile, 2 tablet, 3 + painel lateral desktop
+- [ ] WebReports: 1 coluna mobile, 2 tablet, lado a lado + filtros fixos desktop
+- [ ] WebInspection: scroll horizontal mobile, células maiores tablet, tela cheia desktop
+- [ ] Modais: tela cheia mobile, 70% tablet, 50% desktop
+- [ ] Fontes e ícones escalam proporcionalmente
+- [ ] Mínimo 44x44px para áreas de toque mobile
