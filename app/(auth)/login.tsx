@@ -4,14 +4,23 @@ import {
   ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator,
 } from 'react-native';
 import { useAuth } from '@/lib/auth-context';
-import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { login, setupOwnerPassword, needsFirstSetup } = useAuth();
+
+  // Login state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // First setup state
+  const [ownerName, setOwnerName] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Forgot password
+  const [showForgot, setShowForgot] = useState(false);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -27,15 +36,144 @@ export default function LoginScreen() {
     }
   };
 
-  const fillDemo = (type: 'owner' | 'inspector') => {
-    if (type === 'owner') {
-      setEmail('carlos@orengenharia.com.br');
-    } else {
-      setEmail('ana@orengenharia.com.br');
+  const handleSetupOwner = async () => {
+    if (!ownerName.trim()) {
+      setError('Informe seu nome completo.');
+      return;
     }
-    setPassword('123456');
+    if (newPassword.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError('As senhas não coincidem.');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    const result = await setupOwnerPassword(ownerName.trim(), newPassword);
+    setLoading(false);
+    if (!result.success) {
+      setError(result.error ?? 'Erro ao configurar senha.');
+    }
   };
 
+  // ---- Primeiro acesso: configurar senha do Dono ----
+  if (needsFirstSetup) {
+    return (
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+          <View style={styles.logoContainer}>
+            <View style={styles.logoBox}>
+              <Text style={styles.logoOR}>OR</Text>
+              <Text style={styles.logoObras}>Obras</Text>
+            </View>
+            <Text style={styles.tagline}>Qualidade e precisão em cada inspeção</Text>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.title}>Configurar Acesso</Text>
+            <Text style={styles.subtitle}>
+              Bem-vindo ao OR Obras! Configure sua senha para o primeiro acesso.
+            </Text>
+            <View style={styles.ownerEmailBox}>
+              <Text style={styles.ownerEmailLabel}>Dono da Conta</Text>
+              <Text style={styles.ownerEmail}>orengenharia.ce@gmail.com</Text>
+            </View>
+
+            {error ? (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : null}
+
+            <Text style={styles.label}>Nome Completo</Text>
+            <TextInput
+              style={styles.input}
+              value={ownerName}
+              onChangeText={setOwnerName}
+              placeholder="Seu nome completo"
+              placeholderTextColor="#9E9E9E"
+              autoCapitalize="words"
+              returnKeyType="next"
+            />
+
+            <Text style={styles.label}>Criar Senha</Text>
+            <TextInput
+              style={styles.input}
+              value={newPassword}
+              onChangeText={setNewPassword}
+              placeholder="Mínimo 6 caracteres"
+              placeholderTextColor="#9E9E9E"
+              secureTextEntry
+              returnKeyType="next"
+            />
+
+            <Text style={styles.label}>Confirmar Senha</Text>
+            <TextInput
+              style={styles.input}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              placeholder="Repita a senha"
+              placeholderTextColor="#9E9E9E"
+              secureTextEntry
+              returnKeyType="done"
+              onSubmitEditing={handleSetupOwner}
+            />
+
+            <TouchableOpacity
+              style={[styles.btn, loading && styles.btnDisabled]}
+              onPress={handleSetupOwner}
+              disabled={loading}
+              activeOpacity={0.85}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.btnText}>Confirmar e Entrar</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    );
+  }
+
+  // ---- Esqueci a senha ----
+  if (showForgot) {
+    return (
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+          <View style={styles.logoContainer}>
+            <View style={styles.logoBox}>
+              <Text style={styles.logoOR}>OR</Text>
+              <Text style={styles.logoObras}>Obras</Text>
+            </View>
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.title}>Recuperar Senha</Text>
+            <Text style={styles.subtitle}>
+              Para redefinir sua senha, entre em contato com o administrador do sistema ou acesse o e-mail cadastrado.
+            </Text>
+            <View style={styles.infoBox}>
+              <Text style={styles.infoText}>
+                📧 Contato: orengenharia.ce@gmail.com
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.btnOutline}
+              onPress={() => setShowForgot(false)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.btnOutlineText}>Voltar ao Login</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    );
+  }
+
+  // ---- Login normal ----
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
@@ -84,6 +222,14 @@ export default function LoginScreen() {
           />
 
           <TouchableOpacity
+            style={styles.forgotBtn}
+            onPress={() => setShowForgot(true)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.forgotText}>Esqueci minha senha</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={[styles.btn, loading && styles.btnDisabled]}
             onPress={handleLogin}
             disabled={loading}
@@ -97,19 +243,9 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Demo credentials */}
-        <View style={styles.demoBox}>
-          <Text style={styles.demoTitle}>Acesso de demonstração</Text>
-          <View style={styles.demoRow}>
-            <TouchableOpacity style={styles.demoBtn} onPress={() => fillDemo('owner')} activeOpacity={0.7}>
-              <Text style={styles.demoBtnText}>Dono da Conta</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.demoBtn} onPress={() => fillDemo('inspector')} activeOpacity={0.7}>
-              <Text style={styles.demoBtnText}>Inspetor</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.demoHint}>Senha: 123456</Text>
-        </View>
+        <Text style={styles.footerNote}>
+          Acesso apenas por convite do administrador.
+        </Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -136,7 +272,18 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
     marginBottom: 20,
   },
-  title: { fontSize: 22, fontWeight: '700', color: '#1C1C1C', marginBottom: 16 },
+  title: { fontSize: 22, fontWeight: '700', color: '#1C1C1C', marginBottom: 8 },
+  subtitle: { fontSize: 13, color: '#616161', marginBottom: 16, lineHeight: 20 },
+  ownerEmailBox: {
+    backgroundColor: '#E8F5E9',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#A5D6A7',
+  },
+  ownerEmailLabel: { fontSize: 11, fontWeight: '600', color: '#2E7D32', marginBottom: 2 },
+  ownerEmail: { fontSize: 14, color: '#1C1C1C', fontWeight: '500' },
   label: { fontSize: 13, fontWeight: '600', color: '#424242', marginBottom: 4, marginTop: 12 },
   input: {
     borderWidth: 1,
@@ -157,26 +304,20 @@ const styles = StyleSheet.create({
   },
   btnDisabled: { opacity: 0.6 },
   btnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  btnOutline: {
+    borderWidth: 1.5,
+    borderColor: '#2E7D32',
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  btnOutlineText: { color: '#2E7D32', fontSize: 16, fontWeight: '700' },
   errorBox: { backgroundColor: '#FFEBEE', borderRadius: 8, padding: 10, marginBottom: 8 },
   errorText: { color: '#E53935', fontSize: 13 },
-  demoBox: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-  },
-  demoTitle: { fontSize: 13, fontWeight: '600', color: '#424242', marginBottom: 10 },
-  demoRow: { flexDirection: 'row', gap: 10, marginBottom: 8 },
-  demoBtn: {
-    backgroundColor: '#E8F5E9',
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: '#2E7D32',
-  },
-  demoBtnText: { color: '#2E7D32', fontSize: 13, fontWeight: '600' },
-  demoHint: { fontSize: 12, color: '#9E9E9E' },
+  infoBox: { backgroundColor: '#F5F5F5', borderRadius: 8, padding: 14, marginVertical: 12 },
+  infoText: { fontSize: 14, color: '#424242', lineHeight: 22 },
+  forgotBtn: { alignSelf: 'flex-end', marginTop: 8 },
+  forgotText: { fontSize: 13, color: '#2E7D32', fontWeight: '500' },
+  footerNote: { fontSize: 12, color: '#9E9E9E', textAlign: 'center', marginTop: 8 },
 });

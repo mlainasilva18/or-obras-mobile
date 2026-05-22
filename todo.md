@@ -128,3 +128,48 @@
 - [ ] Modais: tela cheia mobile, 70% tablet, 50% desktop
 - [ ] Fontes e ícones escalam proporcionalmente
 - [ ] Mínimo 44x44px para áreas de toque mobile
+
+## Correções e Novas Funcionalidades (Lote 2)
+
+### Correção de Ícones
+- [ ] Corrigir ícones que aparecem como quadrados vazios na versão web estática
+- [ ] Garantir que MaterialIcons/Expo Vector Icons carregam corretamente no dist/
+
+### Remoção de Planos Pagos
+- [ ] Remover menção a planos Free, Pro e Enterprise
+- [ ] Remover limitações de quantidade de obras/usuários/armazenamento
+- [ ] Remover telas, botões e banners de upgrade de plano
+
+### Configuração do Dono da Conta
+- [ ] Configurar orengenharia.ce@gmail.com como Dono da Conta com acesso total
+- [ ] Fluxo de primeiro acesso: solicitar cadastro de senha
+- [ ] Bloquear cadastro público — apenas convite do Dono
+- [ ] Remover opção de cadastro público na tela de login
+- [ ] Manter apenas e-mail, senha e recuperação de senha no login
+
+### Limpeza de Dados de Exemplo
+- [ ] Remover dados fictícios do app (Residencial Parque Verde, Edifício Comercial Centro, ABC, Carlos)
+- [ ] App deve iniciar completamente limpo
+
+### Módulo Edificações (Lote 2)
+- [ ] Adicionar tipos Edificacao, LocalEdificacao, ElementoEdificacao
+- [ ] Adicionar CRUD de Edificações no storage.ts
+- [ ] Adicionar estado e funções de Edificações no data-context
+- [ ] Criar tela EdificacoesScreen com lista, editar e excluir
+- [ ] Formulário: nome, locais (infinitos, botão +/x), elementos modo grupo (prévia) e unitário
+- [ ] Botão Salvar fixo + toast "Edificação salva com sucesso"
+- [ ] Adicionar aba Edificações entre Obras e Serviços no cadastros.tsx
+- [ ] Controle de acesso: apenas Dono e Admin visualizam a aba
+- [ ] Integrar Edificação → Local → Elemento nos seletores da Inspeção FVS
+
+### Câmera com Watermark no Modal de Inspeção
+- [ ] Botão "Tirar Foto" abaixo do campo Observação de Tratamento
+- [ ] Botão "Escolher da Galeria"
+- [ ] Watermark automático: "Inspetor: [nome] | DD/MM/AAAA HH:MM\nOR Obras — OR Engenharia"
+- [ ] Miniaturas em grid 3 colunas com botão X para excluir
+- [ ] Visualização em tela cheia ao tocar na miniatura
+- [ ] Múltiplas fotos por inspeção
+- [ ] Fotos salvas e vinculadas à célula (etapa + local)
+- [ ] Fotos reaparecem ao reabrir o modal da mesma célula
+- [ ] Indicador visual de câmera na célula que possui foto
+- [ ] Armazenamento no Supabase Storage: Obra > Torre > Pavimento > Local > Etapa

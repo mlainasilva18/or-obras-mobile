@@ -225,23 +225,6 @@ export default function SettingsScreen() {
           />
         </View>
 
-        {/* Plano */}
-        <SectionHeader title="Plano de Acesso" />
-        <View style={styles.planCard}>
-          <View style={styles.planHeader}>
-            <MaterialIcons name="star" size={20} color="#F9A825" />
-            <Text style={styles.planName}>Plano Livre</Text>
-          </View>
-          <Text style={styles.planDesc}>1 obra · 2 usuários · 1 GB de armazenamento</Text>
-          <TouchableOpacity
-            style={styles.upgradeBtn}
-            onPress={() => Alert.alert('Upgrade', 'Para acessar mais obras, usuários e armazenamento, entre em contato com a OR Engenharia.')}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.upgradeBtnText}>Fazer Upgrade</Text>
-          </TouchableOpacity>
-        </View>
-
         {/* Sobre */}
         <SectionHeader title="Sobre" />
         <View style={styles.card}>
@@ -297,12 +280,6 @@ const styles = StyleSheet.create({
   divider: { height: 1, backgroundColor: '#F5F5F5', marginLeft: 62 },
   statusBadge: { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
   statusBadgeText: { fontSize: 12, fontWeight: '700' },
-  planCard: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E0E0E0', marginBottom: 4 },
-  planHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
-  planName: { fontSize: 16, fontWeight: '700', color: '#1C1C1C' },
-  planDesc: { fontSize: 13, color: '#9E9E9E', marginBottom: 14 },
-  upgradeBtn: { backgroundColor: '#2E7D32', borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
-  upgradeBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
   aboutRow: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 14 },
   miniLogo: { alignItems: 'center' },
   miniLogoOR: { fontSize: 20, fontWeight: '900', color: '#2E7D32', lineHeight: 22 },

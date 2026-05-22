@@ -9,8 +9,9 @@ import { ScreenContainer } from '@/components/screen-container';
 import { useData } from '@/lib/data-context';
 import { useAuth } from '@/lib/auth-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import type { InspectionStatus, InspectionCell, EtapaServico, Local } from '@/lib/types';
+import type { InspectionStatus, InspectionCell, EtapaServico, Local, InspectionPhoto } from '@/lib/types';
 import { STATUS_CONFIG } from '@/lib/types';
+import { CellPhotoSection } from '@/components/CellPhotoSection';
 
 const CELL_W = 64;
 const CELL_H = 52;
@@ -61,31 +62,39 @@ function InspectionCellView({
       {cell?.observation && (
         <View style={cellStyles.obsDot} />
       )}
+      {cell?.photos && cell.photos.length > 0 && (
+        <View style={cellStyles.cameraIndicator}>
+          <MaterialIcons name="photo-camera" size={8} color="#fff" />
+        </View>
+      )}
     </Pressable>
   );
 }
 
 // ---- Cell Action Modal ----
 function CellActionModal({
-  visible, onClose, etapa, local, cell, onSave,
+  visible, onClose, etapa, local, cell, onSave, inspectorName,
 }: {
   visible: boolean;
   onClose: () => void;
   etapa?: EtapaServico;
   local?: Local;
   cell?: InspectionCell;
-  onSave: (status: InspectionStatus, obs: string, treatObs: string) => void;
+  inspectorName: string;
+  onSave: (status: InspectionStatus, obs: string, treatObs: string, photos: InspectionPhoto[]) => void;
 }) {
   const [selectedStatus, setSelectedStatus] = useState<InspectionStatus>(cell?.status ?? 'nao_avaliado');
   const [obs, setObs] = useState(cell?.observation ?? '');
   const [treatObs, setTreatObs] = useState(cell?.treatmentObservation ?? '');
-  const [tab, setTab] = useState<'status' | 'obs'>('status');
+  const [photos, setPhotos] = useState<InspectionPhoto[]>(cell?.photos ?? []);
+  const [tab, setTab] = useState<'status' | 'obs' | 'photos'>('status');
 
   React.useEffect(() => {
     if (visible) {
       setSelectedStatus(cell?.status ?? 'nao_avaliado');
       setObs(cell?.observation ?? '');
       setTreatObs(cell?.treatmentObservation ?? '');
+      setPhotos(cell?.photos ?? []);
       setTab('status');
     }
   }, [visible, cell]);
@@ -119,6 +128,21 @@ function CellActionModal({
             activeOpacity={0.7}
           >
             <Text style={[actionStyles.tabText, tab === 'obs' && actionStyles.tabTextActive]}>Observações</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[actionStyles.tab, tab === 'photos' && actionStyles.tabActive]}
+            onPress={() => setTab('photos')}
+            activeOpacity={0.7}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <MaterialIcons name="photo-camera" size={14} color={tab === 'photos' ? '#2E7D32' : '#9E9E9E'} />
+              <Text style={[actionStyles.tabText, tab === 'photos' && actionStyles.tabTextActive]}>Fotos</Text>
+              {photos.length > 0 && (
+                <View style={actionStyles.photoBadge}>
+                  <Text style={actionStyles.photoBadgeText}>{photos.length}</Text>
+                </View>
+              )}
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -179,12 +203,21 @@ function CellActionModal({
               />
             </View>
           )}
+
+          {tab === 'photos' && (
+            <CellPhotoSection
+              cellId={cell?.id ?? `cell_${etapa.id}_${local.id}`}
+              photos={photos}
+              inspectorName={inspectorName}
+              onPhotosChange={setPhotos}
+            />
+          )}
         </ScrollView>
 
         <View style={actionStyles.footer}>
           <TouchableOpacity
             style={[actionStyles.saveBtn, { backgroundColor: STATUS_CONFIG[selectedStatus].color }]}
-            onPress={() => { onSave(selectedStatus, obs, treatObs); onClose(); }}
+            onPress={() => { onSave(selectedStatus, obs, treatObs, photos); onClose(); }}
             activeOpacity={0.85}
           >
             <Text style={actionStyles.saveBtnText}>Salvar — {STATUS_CONFIG[selectedStatus].label}</Text>
@@ -319,7 +352,7 @@ export default function InspectionScreen() {
     inspections.find(c => c.etapaId === etapaId && c.localId === localId),
     [inspections]);
 
-  const handleSaveCell = async (status: InspectionStatus, obs: string, treatObs: string) => {
+  const handleSaveCell = async (status: InspectionStatus, obs: string, treatObs: string, photos: InspectionPhoto[]) => {
     if (!activeCell || !selectedObraId || !selectedTorreId || !selectedPavId || !selectedServId) return;
     const existing = getCell(activeCell.etapaId, activeCell.localId);
     const cell: InspectionCell = {
@@ -333,6 +366,7 @@ export default function InspectionScreen() {
       status,
       observation: obs || undefined,
       treatmentObservation: treatObs || undefined,
+      photos: photos.length > 0 ? photos : undefined,
       inspectedBy: user?.name,
       inspectedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -676,6 +710,7 @@ export default function InspectionScreen() {
         local={activeLocal}
         cell={activeCellData}
         onSave={handleSaveCell}
+        inspectorName={user?.name ?? 'Inspetor'}
       />
       <CellTooltipModal
         visible={!!tooltipCell}
@@ -760,6 +795,17 @@ const cellStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.2)',
   },
+  cameraIndicator: {
+    position: 'absolute',
+    bottom: 3,
+    right: 3,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 const actionStyles = StyleSheet.create({
@@ -787,6 +833,8 @@ const actionStyles = StyleSheet.create({
   footer: { padding: 16, borderTopWidth: 1, borderTopColor: '#E0E0E0' },
   saveBtn: { borderRadius: 10, paddingVertical: 14, alignItems: 'center' },
   saveBtnText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
+  photoBadge: { backgroundColor: '#2E7D32', borderRadius: 8, paddingHorizontal: 5, paddingVertical: 1, minWidth: 16, alignItems: 'center' },
+  photoBadgeText: { color: '#fff', fontSize: 10, fontWeight: '700' },
 });
 
 const tooltipStyles = StyleSheet.create({

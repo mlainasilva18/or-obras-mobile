@@ -103,9 +103,18 @@ export interface InspectionCell {
   observation?: string;
   treatmentObservation?: string;
   attachments?: string[];
+  photos?: InspectionPhoto[]; // Fotos com watermark
   inspectedBy?: string;
   inspectedAt?: string;
   updatedAt: string;
+}
+
+export interface InspectionPhoto {
+  id: string;
+  uri: string; // URI local da foto com watermark
+  takenAt: string; // ISO timestamp
+  takenBy: string; // Nome do inspetor
+  cellId: string;
 }
 
 // ---- Edificações ----

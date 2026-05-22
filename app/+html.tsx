@@ -85,6 +85,30 @@ export default function Root({ children }: PropsWithChildren) {
         <meta property="og:description" content="Sistema de Ficha de Verificação de Serviço para construtoras" />
         <meta property="og:image" content="/icon-512.png" />
 
+        {/* ============================================================
+            Fontes de ícones — MaterialIcons (corrige ícones no web estático)
+            ============================================================ */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          @font-face {
+            font-family: 'MaterialIcons';
+            src: url('/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.4e85bc9ebe07e0340c9c4fc2f6c38908.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'MaterialCommunityIcons';
+            src: url('/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.6e435534bd35da5fef04168860a9b8fa.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'Ionicons';
+            src: url('/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.b4eb097d35f44ed943676fd56f6bdc51.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+          }
+        `}} />
+
         {/* Reset de estilo para React Native Web */}
         <ScrollViewStyleReset />
 

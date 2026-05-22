@@ -42,6 +42,9 @@ const config: ExpoConfig = {
     bundleIdentifier: env.iosBundleId,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
+      NSCameraUsageDescription: "O OR Obras precisa acessar a câmera para registrar fotos de inspeção.",
+      NSPhotoLibraryUsageDescription: "O OR Obras precisa acessar a galeria para anexar fotos de inspeção.",
+      NSPhotoLibraryAddUsageDescription: "O OR Obras precisa salvar fotos na galeria.",
     },
   },
   android: {
@@ -54,7 +57,13 @@ const config: ExpoConfig = {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     package: env.androidPackage,
-    permissions: ["POST_NOTIFICATIONS"],
+    permissions: [
+      "POST_NOTIFICATIONS",
+      "CAMERA",
+      "READ_MEDIA_IMAGES",
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE",
+    ],
     intentFilters: [
       {
         action: "VIEW",
