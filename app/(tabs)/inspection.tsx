@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  Modal, TextInput,
+  Modal, TextInput, Platform,
   Pressable,
 } from 'react-native';
+import { WebInspection } from '@/components/web/WebInspection';
 import { ScreenContainer } from '@/components/screen-container';
 import { useData } from '@/lib/data-context';
 import { useAuth } from '@/lib/auth-context';
@@ -259,6 +260,8 @@ function CellTooltipModal({
 
 // ---- Main Inspection Screen ----
 export default function InspectionScreen() {
+  if (Platform.OS === 'web') return <WebInspection />;
+
   const { obras, torres, pavimentos, locais, servicos, inspections, saveInspection } = useData();
   const { user } = useAuth();
 

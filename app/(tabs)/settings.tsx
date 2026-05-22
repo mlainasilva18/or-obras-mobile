@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  Switch, Alert, Modal, TextInput,
+  Switch, Alert, Modal, TextInput, Platform,
 } from 'react-native';
+import { WebSettings } from '@/components/web/WebSettings';
 import { ScreenContainer } from '@/components/screen-container';
 import { useAuth } from '@/lib/auth-context';
 import { useNetwork } from '@/lib/network-context';
@@ -91,6 +92,8 @@ function ProfileModal({ visible, onClose }: { visible: boolean; onClose: () => v
 }
 
 export default function SettingsScreen() {
+  if (Platform.OS === 'web') return <WebSettings />;
+
   const { user, logout } = useAuth();
   const { isOnline, pendingSync } = useNetwork();
   const [autoSync, setAutoSync] = useState(false);

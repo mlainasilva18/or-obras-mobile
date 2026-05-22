@@ -49,6 +49,8 @@ interface DataContextType {
   removeResponsavel: (id: string) => Promise<void>;
   // Inspections
   saveInspection: (cell: InspectionCell) => Promise<void>;
+  // Utility
+  clearAllData: () => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | null>(null);
@@ -192,6 +194,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setResponsaveis(prev => prev.filter(r => r.id !== id));
   };
 
+  // Utility
+  const clearAllData = async () => {
+    const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+    await AsyncStorage.clear();
+    setObras([]); setTorres([]); setPavimentos([]); setLocais([]);
+    setServicos([]); setResponsaveis([]); setInspections([]);
+  };
+
   // Inspections
   const saveInspection = async (cell: InspectionCell) => {
     await upsertInspection(cell);
@@ -217,6 +227,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       createServico, editServico, removeServico,
       createResponsavel, editResponsavel, removeResponsavel,
       saveInspection,
+      clearAllData,
     }}>
       {children}
     </DataContext.Provider>

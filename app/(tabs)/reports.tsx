@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions,
+  View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Platform,
 } from 'react-native';
+import { WebReports } from '@/components/web/WebReports';
 import { ScreenContainer } from '@/components/screen-container';
 import { useData } from '@/lib/data-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -107,6 +108,8 @@ function GaugeChart({ pct, size }: { pct: number; size: number }) {
 type ReportType = 'nonconformity' | 'progress';
 
 export default function ReportsScreen() {
+  if (Platform.OS === 'web') return <WebReports />;
+
   const { obras, torres, inspections } = useData();
   const [reportType, setReportType] = useState<ReportType>('progress');
   const [selectedObraId, setSelectedObraId] = useState<string | null>(null);

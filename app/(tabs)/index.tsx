@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet,
+  View, Text, ScrollView, TouchableOpacity, StyleSheet, Platform,
 } from 'react-native';
+import { WebDashboard } from '@/components/web/WebDashboard';
 import { ScreenContainer } from '@/components/screen-container';
 import { useAuth } from '@/lib/auth-context';
 import { useData } from '@/lib/data-context';
@@ -9,6 +10,7 @@ import { useNetwork } from '@/lib/network-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import type { Obra } from '@/lib/types';
+import { STATUS_CONFIG } from '@/lib/types';
 
 const STATUS_LABELS: Record<string, string> = {
   active: 'Em andamento',
@@ -86,6 +88,8 @@ function ObraCard({ obra }: { obra: Obra }) {
 }
 
 export default function DashboardScreen() {
+  if (Platform.OS === 'web') return <WebDashboard />;
+
   const { user } = useAuth();
   const { obras, inspections, isLoading } = useData();
   const { isOnline, pendingSync } = useNetwork();

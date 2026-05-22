@@ -1,0 +1,112 @@
+/* OR Obras — Web Styles */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --color-primary: #2E7D32;
+  --color-primary-light: #E8F5E9;
+  --color-error: #E53935;
+  --color-warning: #F9A825;
+  --color-info: #1565C0;
+  --color-text: #1C1C1C;
+  --color-muted: #616161;
+  --color-border: #E0E0E0;
+  --color-surface: #FFFFFF;
+  --color-bg: #F5F5F5;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #BDBDBD;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9E9E9E;
+}
+
+/* Table styles for FVS matrix */
+.fvs-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+}
+
+.fvs-cell {
+  cursor: pointer;
+  transition: opacity 0.15s;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.fvs-cell:hover {
+  opacity: 0.85;
+  transform: scale(1.02);
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  z-index: 9999;
+  background: #1C1C1C;
+  color: #FFFFFF;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  max-width: 240px;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* PWA install prompt */
+@media (display-mode: standalone) {
+  .pwa-install-banner {
+    display: none;
+  }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 767px) {
+  .web-only {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .sidebar-label {
+    display: none;
+  }
+}
+
+/* Print styles for reports */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-full {
+    width: 100% !important;
+  }
+}

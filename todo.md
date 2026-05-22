@@ -71,3 +71,17 @@
 - [x] Indicadores de progresso por obra
 - [x] Atalhos rápidos para inspeção, relatórios e cadastros
 - [x] Indicador de sincronização pendente e status de conexão
+
+## Versão Web / PWA (Desktop)
+- [x] Layout web com sidebar fixa, header e área de conteúdo
+- [x] Detecção de plataforma (Platform.OS === 'web') em todas as telas
+- [x] WebDashboard com KPIs, cards de obras, gráfico de barra e últimas inspeções
+- [x] WebInspection com tabela FVS, drawer lateral, seleção múltipla e ação em lote
+- [x] WebCadastros com abas, formulários modais e árvore hierárquica
+- [x] WebReports com gráfico gauge SVG, gráfico de pizza SVG, barras e tabela de NCs
+- [x] WebSettings com sidebar de seções, perfil, integrações, planos e sistema
+- [x] PWAInstallBanner com detecção de beforeinstallprompt
+- [x] Service Worker para cache offline (sw.js)
+- [x] manifest.json com ícones 192x512 e tema verde
+- [x] Layout web específico (app/(tabs)/_layout.web.tsx) com Slot e PWAInstallBanner
+- [x] Responsividade: sidebar recolhível em telas menores

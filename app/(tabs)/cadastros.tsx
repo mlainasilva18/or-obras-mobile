@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  TextInput, Modal, Alert,
+  TextInput, Modal, Alert, Platform,
 } from 'react-native';
+import { WebCadastros } from '@/components/web/WebCadastros';
 import { ScreenContainer } from '@/components/screen-container';
 import { useData } from '@/lib/data-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -508,6 +509,8 @@ function ResponsavelFormModal({
 
 // ---- Main Screen ----
 export default function CadastrosScreen() {
+  if (Platform.OS === 'web') return <WebCadastros />;
+
   const { obras, servicos, responsaveis, createObra, editObra, removeObra, createServico, editServico, removeServico, createResponsavel, editResponsavel, removeResponsavel } = useData();
   const [activeTab, setActiveTab] = useState<Tab>('obras');
   const [obraModal, setObraModal] = useState(false);
