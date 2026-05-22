@@ -85,3 +85,11 @@
 - [x] manifest.json com ícones 192x512 e tema verde
 - [x] Layout web específico (app/(tabs)/_layout.web.tsx) com Slot e PWAInstallBanner
 - [x] Responsividade: sidebar recolhível em telas menores
+
+## PWA — Publicação (Manus Publish)
+- [x] Criar app/+html.tsx com meta tags Apple (apple-touch-icon, apple-mobile-web-app-capable, splash screens)
+- [x] Atualizar manifest.json com scope, display_override, ícones separados any/maskable e shortcuts
+- [x] Atualizar sw.js para cache-first em assets e network-first em navegação (v2)
+- [x] Registrar service worker via script inline no +html.tsx
+- [x] Meta tags Open Graph para compartilhamento (WhatsApp, redes sociais)
+- [x] theme-color #2E7D32 para barra de status no Chrome e Safari
